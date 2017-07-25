@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_view"
+        android:layout_gravity="top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        card_view:cardCornerRadius="4dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="8dp"
+        card_view:cardBackgroundColor="#FFFFFF">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp">
+            <ImageView
+                android:id="@+id/event_image"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:src="@drawable/jackpot"
+                android:scaleType="centerInside"
+                android:adjustViewBounds="true"
+                android:contentDescription="event_imageView">
+            </ImageView>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="24dp">
+                <TextView
+                    android:id="@+id/event_month_textView"
+                    android:text="July"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+                </TextView>
+                <TextView
+                    android:id="@+id/event_name_textView"
+                    android:text="Event Name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4">
+                </TextView>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
+                <TextView
+                    android:id="@+id/event_day_textView"
+                    android:text="21"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+                </TextView>
+                <TextView
+                    android:id="@+id/event_group_name_textView"
+                    android:text="Hosted by Group Name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4">
+                </TextView>
+            </LinearLayout>
+            <Button
+                android:id="@+id/event_status_button"
+                android:text="Apply"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
+            </Button>
+            <TextView
+                android:id="@+id/event_date_time_textView"
+                android:text="07/24/17 at 4:00 PM"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
+            </TextView>
+            <TextView
+                android:id="@+id/event_location_textView"
+                android:text="Event Location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" >
+            </TextView>
+            <TextView
+                android:id="@+id/event_detail_textView"
+                android:text="These are the details of the event. It will only be two lines and no more."
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" >
+            </TextView>
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+</LinearLayout>

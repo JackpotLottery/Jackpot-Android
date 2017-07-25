@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_profile"
+        android:icon="@drawable/ic_account_holo_dark"
+        android:orderInCategory="100"
+        app:showAsAction="always"
+        android:title="account_image">
+    </item>
+    <item
+        android:id="@+id/action_add_event"
+        android:icon="@drawable/ic_add"
+        android:orderInCategory="0"
+        app:showAsAction="always"
+        android:title="add_event">
+    </item>
+</menu>
