@@ -3,9 +3,9 @@ apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion "25.0.0"
+    buildToolsVersion "25.0.2"
     defaultConfig {
-        applicationId "com.nickbryanmiller.jackpotlottery"
+        applicationId "com.nickbryanmiller.networktest"
         minSdkVersion 23
         targetSdkVersion 26
         versionCode 1
@@ -22,15 +22,17 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     compile 'com.android.support:appcompat-v7:26.+'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.android.support:design:26.+'
-    compile 'com.android.support:cardview-v7:21.0.3'
-    compile 'com.android.support:recyclerview-v7:21.0.3'
-    compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'com.loopj.android:android-async-http:1.4.6'
-    compile 'org.apache.httpcomponents:httpcore:4.3.2'
+    compile 'com.google.android.gms:play-services-auth:10.2.0'
+    compile 'pub.devrel:easypermissions:0.2.1'
+    compile('com.google.api-client:google-api-client-android:1.22.0') {
+        exclude group: 'org.apache.httpcomponents'
+    }
+    compile('com.google.apis:google-api-services-drive:v3-rev78-1.22.0') {
+        exclude group: 'org.apache.httpcomponents'
+    }
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 }
 repositories {
     mavenCentral()

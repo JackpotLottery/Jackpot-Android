@@ -1,11 +1,13 @@
 package com.nickbryanmiller.jackpotlottery
 
-import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 
 class LoginActivity : AppCompatActivity() {
+
+    internal var jackpotClient: JackpotClient? = null
+    internal val user: User = User()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -15,8 +17,10 @@ class LoginActivity : AppCompatActivity() {
 
     fun onLoginButtonClick(v: View) {
         // login and then navigate
-        val eventsIntent = Intent(this, EventsActivity::class.java)
-        startActivity(eventsIntent)
+//        val eventsIntent = Intent(this, EventsActivity::class.java)
+//        startActivity(eventsIntent)
+
+        user.fetchEvents()
     }
 
     fun onSignupButtonClick(v: View) {

@@ -31,10 +31,23 @@ class User {
         return pendingEvents
     }
 
+    internal fun fetchEvents() {
+        JackpotClient.getEvents(token, this::fetchEventsCompletion)
+    }
+    private fun fetchEventsCompletion(events: ArrayList<EventDataObject>) {
+        this.allEvents = events
+    }
+    internal fun fetchGroups() {
+        JackpotClient.getGroups(token, this::fetchGroupsCompletion)
+    }
+    private fun fetchGroupsCompletion(groups: ArrayList<GroupDataObject>) {
+        this.groups = groups
+    }
+
     private fun setupUser() {
         displayName = "Display Name"
         username = "username@example.com"
-        token = "token"
+        token = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
         loadGroups()
         loadEvents()
     }
