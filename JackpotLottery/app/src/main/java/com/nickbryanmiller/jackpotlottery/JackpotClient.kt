@@ -13,12 +13,19 @@ class JackpotClient {
         private val client: AsyncHttpClient = AsyncHttpClient()
         private val user: User = User()
 
-        fun getContentFromURLExtension(urlExtension: String, token: String, handler: JsonHttpResponseHandler) {
+        private fun getContentFromURLExtension(urlExtension: String, token: String, handler: JsonHttpResponseHandler) {
             val url = API_BASE_URL + urlExtension + "?api_key=" + token
             client.get(url, handler)
         }
 
-        fun getEvents(token: String, completionMethod: (ArrayList<EventDataObject>) -> Unit) {
+        fun fetchToken(callbackMethod:(String, completionMethod: (String) -> Unit) -> Unit,
+                       completionMethod: (String) -> Unit) {
+            callbackMethod("a07e22bc18f5cb106bfe4cc1f83ad8ed", completionMethod)
+        }
+
+        fun fetchEvents(token: String,
+                      callbackMethod: (ArrayList<EventDataObject>, completionMethod: (ArrayList<EventDataObject>) -> Unit) -> Unit,
+                      completionMethod: (ArrayList<EventDataObject>) -> Unit) {
             getContentFromURLExtension("", token, object : JsonHttpResponseHandler() {
                 override fun onSuccess(statusCode: Int, headers: Array<org.apache.http.Header>?, responseBody: JSONObject?) {
                     var items: JSONArray? = null
@@ -30,7 +37,7 @@ class JackpotClient {
                         print(items!![0])
                         // Parse the json array into array of model objects
                         val events: ArrayList<EventDataObject> = ArrayList()
-                        completionMethod(events)
+                        callbackMethod(events, completionMethod)
                         //return new ArrayList<EventDataObject>
                     } catch (e: JSONException) {
                         e.printStackTrace()
@@ -40,7 +47,7 @@ class JackpotClient {
             })
         }
 
-        fun getGroups(token: String, completionMethod: (ArrayList<GroupDataObject>) -> Unit) {
+        fun fetchGroups(token: String, completionMethod: (ArrayList<GroupDataObject>) -> Unit) {
             val groups: ArrayList<GroupDataObject> = ArrayList()
             completionMethod(groups)
         }

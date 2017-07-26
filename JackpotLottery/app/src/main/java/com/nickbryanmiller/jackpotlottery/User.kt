@@ -14,6 +14,11 @@ class User {
         setupUser()
     }
 
+    internal constructor(token: String) {
+        setupUser()
+        this.token = token
+    }
+
     internal fun getAllGroups(): ArrayList<GroupDataObject> {
         return groups
     }
@@ -31,14 +36,22 @@ class User {
         return pendingEvents
     }
 
-    internal fun fetchEvents() {
-        JackpotClient.getEvents(token, this::fetchEventsCompletion)
+    internal fun fetchToken(completionMethod: (String) -> Unit) {
+        JackpotClient.fetchToken(this::fetchTokenCompletion, completionMethod)
     }
-    private fun fetchEventsCompletion(events: ArrayList<EventDataObject>) {
+    private fun fetchTokenCompletion(token: String, completionMethod: (String) -> Unit) {
+        this.token = token
+        completionMethod(this.token)
+    }
+    internal fun fetchEvents(completionMethod: (ArrayList<EventDataObject>) -> Unit) {
+        JackpotClient.fetchEvents(token, this::fetchEventsCompletion, completionMethod)
+    }
+    private fun fetchEventsCompletion(events: ArrayList<EventDataObject>, completionMethod: (ArrayList<EventDataObject>) -> Unit) {
         this.allEvents = events
+        completionMethod(this.allEvents)
     }
     internal fun fetchGroups() {
-        JackpotClient.getGroups(token, this::fetchGroupsCompletion)
+        JackpotClient.fetchGroups(token, this::fetchGroupsCompletion)
     }
     private fun fetchGroupsCompletion(groups: ArrayList<GroupDataObject>) {
         this.groups = groups
@@ -47,7 +60,7 @@ class User {
     private fun setupUser() {
         displayName = "Display Name"
         username = "username@example.com"
-        token = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
+        //token = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
         loadGroups()
         loadEvents()
     }
