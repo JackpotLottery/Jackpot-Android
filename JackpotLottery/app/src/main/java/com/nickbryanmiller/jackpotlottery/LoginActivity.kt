@@ -2,6 +2,8 @@ package com.nickbryanmiller.jackpotlottery
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.TextView
@@ -61,8 +63,14 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun authenticationCompletion(user: User) {
-        val eventsIntent = Intent(this, EventsActivity::class.java)
-        startActivity(eventsIntent)
+        val mainHandler = Handler(Looper.getMainLooper());
+        val myRunnable = Runnable() {
+            runOnUiThread {
+                val eventsIntent = Intent(this, EventsActivity::class.java)
+                startActivity(eventsIntent)
+            }
+        }
+        mainHandler.post(myRunnable);
     }
 
     override fun onBackPressed() {

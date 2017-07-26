@@ -36,13 +36,17 @@ class EventsActivity : AppCompatActivity() {
 
         title = "Events"
 
-        // because it crashed when I try to pass the user object
-        val token: String = this.intent.extras.get("user_token") as String
-        if (!token.isNullOrEmpty()) {
-            this.user = User(token)
-            user.fetchEvents {
-                print("I am done")
+        try {
+            val token: String = this.intent.extras.get("user_token") as String
+            if (!token.isNullOrEmpty()) {
+                this.user = User(token)
+                user.fetchEvents {
+                    print("I am done")
+                }
             }
+        }
+        catch (e: Exception) {
+            print(e.message)
         }
 
         val host = findViewById(R.id.tabHost) as TabHost
