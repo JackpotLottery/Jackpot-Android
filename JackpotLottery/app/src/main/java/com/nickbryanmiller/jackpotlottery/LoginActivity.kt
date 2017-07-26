@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
+import android.widget.TextView
 
 class LoginActivity : AppCompatActivity() {
 
@@ -15,10 +16,9 @@ class LoginActivity : AppCompatActivity() {
 
     fun onLoginButtonClick(v: View) {
         // login and then navigate
-        val eventsIntent = Intent(this, EventsActivity::class.java)
-        startActivity(eventsIntent)
+        val user: User = User()
+        user.fetchToken(this::login)
     }
-
     fun onSignupButtonClick(v: View) {
         val loginButton = findViewById(R.id.loginButton)
         loginButton.visibility = View.GONE
@@ -31,11 +31,9 @@ class LoginActivity : AppCompatActivity() {
         val signUpButton = findViewById(R.id.signupButton)
         signUpButton.visibility = View.GONE
     }
-
     fun onCreateAccountButtonClick(v: View) {
-        // sign up
+        createAccount()
     }
-
     fun onSignupCancelButtonClick(v: View) {
         val loginButton = findViewById(R.id.loginButton)
         loginButton.visibility = View.VISIBLE
@@ -47,6 +45,24 @@ class LoginActivity : AppCompatActivity() {
         createAccountButton.visibility = View.GONE
         val cancelButton = findViewById(R.id.cancelButton)
         cancelButton.visibility = View.GONE
+    }
+
+    private fun login(token: String) {
+        val email: TextView = findViewById(R.id.usernameText) as TextView
+        val password: TextView = findViewById(R.id.passwordText) as TextView
+        JackpotClient.login(email.text.toString(), password.text.toString(), this::authenticationCompletion)
+    }
+
+    private fun createAccount() {
+        val email: TextView = findViewById(R.id.usernameText) as TextView
+        val password: TextView = findViewById(R.id.passwordText) as TextView
+        val displayName: TextView = findViewById(R.id.nameText) as TextView
+        JackpotClient.signup(email.text.toString(), password.text.toString(), displayName.text.toString(), this::authenticationCompletion)
+    }
+
+    private fun authenticationCompletion(user: User) {
+        val eventsIntent = Intent(this, EventsActivity::class.java)
+        startActivity(eventsIntent)
     }
 
     override fun onBackPressed() {

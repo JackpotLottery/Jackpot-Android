@@ -28,13 +28,22 @@ class EventsActivity : AppCompatActivity() {
     private var mAdapterPending: RecyclerView.Adapter<*>? = null
     private var mLayoutManagerPending: RecyclerView.LayoutManager? = null
     // User Object
-    private var user: User = User()
+    internal var user: User = User()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_events)
 
         title = "Events"
+
+        // because it crashed when I try to pass the user object
+        val token: String = this.intent.extras.get("user_token") as String
+        if (!token.isNullOrEmpty()) {
+            this.user = User(token)
+            user.fetchEvents {
+                print("I am done")
+            }
+        }
 
         val host = findViewById(R.id.tabHost) as TabHost
         host.setup()

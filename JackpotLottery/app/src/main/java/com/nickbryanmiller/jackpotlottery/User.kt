@@ -1,9 +1,14 @@
 package com.nickbryanmiller.jackpotlottery
 
+import org.json.JSONObject
+
 class User {
     internal var displayName: String = ""
-    internal var username: String = ""
+    internal var email: String = ""
     private var token: String = ""
+    private var password: String = ""
+    private var id: String = ""
+    private var tokenExpiration: Long = 0
     private var groups: ArrayList<GroupDataObject> = ArrayList()
     private var groupNames: ArrayList<String> = ArrayList()
     private var allEvents: ArrayList<EventDataObject> = ArrayList()
@@ -12,6 +17,18 @@ class User {
 
     internal constructor() {
         setupUser()
+    }
+    internal constructor(token: String) {
+        setupUser()
+        this.token = token
+    }
+    internal constructor(userJSON: JSONObject) {
+        email = userJSON.getString("email")
+        displayName = userJSON.getString("displayName")
+        password = userJSON.getString("password")
+        id = userJSON.getString("_id")
+        token = userJSON.getString("token")
+        tokenExpiration = userJSON.getLong("tokenExpiration")
     }
 
     internal fun getAllGroups(): ArrayList<GroupDataObject> {
@@ -31,10 +48,34 @@ class User {
         return pendingEvents
     }
 
+    internal fun login() {
+
+    }
+    internal fun fetchToken(completionMethod: (String) -> Unit) {
+        JackpotClient.fetchToken(this::fetchTokenCompletion, completionMethod)
+    }
+    private fun fetchTokenCompletion(token: String, completionMethod: (String) -> Unit) {
+        this.token = token
+        completionMethod(this.token)
+    }
+    internal fun fetchEvents(completionMethod: (ArrayList<EventDataObject>) -> Unit) {
+        JackpotClient.fetchEvents(token, this::fetchEventsCompletion, completionMethod)
+    }
+    private fun fetchEventsCompletion(events: ArrayList<EventDataObject>, completionMethod: (ArrayList<EventDataObject>) -> Unit) {
+        this.allEvents = events
+        completionMethod(this.allEvents)
+    }
+    internal fun fetchGroups() {
+        JackpotClient.fetchGroups(token, this::fetchGroupsCompletion)
+    }
+    private fun fetchGroupsCompletion(groups: ArrayList<GroupDataObject>) {
+        this.groups = groups
+    }
+
     private fun setupUser() {
         displayName = "Display Name"
-        username = "username@example.com"
-        token = "token"
+        email = "username@example.com"
+        //token = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
         loadGroups()
         loadEvents()
     }
