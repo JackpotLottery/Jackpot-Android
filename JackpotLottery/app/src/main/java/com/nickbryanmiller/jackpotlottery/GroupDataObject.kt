@@ -5,17 +5,20 @@ import org.json.JSONArray
 
 class GroupDataObject {
 
-    internal var name: String? = null
-    internal var username: String? = null
-    internal var password: String? = null
-    internal var description: String? = null
-    internal var imageUrl: String? = null
+    internal var name: String? = ""
+    internal var id: String? = ""
+    internal var password: String? = ""
+    internal var description: String? = ""
+    internal var admins: ArrayList<String>? = null
 
     internal constructor() {
 
     }
     internal constructor(groupJSON: JSONObject) {
-
+        name = groupJSON.getString("name")
+        id = groupJSON.getString("_id")
+        password = groupJSON.getString("password")
+        description = groupJSON.getString("description")
     }
 
     companion object {
@@ -24,7 +27,7 @@ class GroupDataObject {
             for (i in 0..jsonArray.length() - 1) {
                 var groupJson: JSONObject? = null
                 try {
-                    groupJson = jsonArray.getJSONObject(i).getJSONObject("data")
+                    groupJson = jsonArray.getJSONObject(i)
                 }
                 catch (e: Exception) {
                     e.printStackTrace()

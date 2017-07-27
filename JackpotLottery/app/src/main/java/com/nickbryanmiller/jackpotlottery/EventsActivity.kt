@@ -68,6 +68,8 @@ class EventsActivity : AppCompatActivity() {
                 2 -> loadPendingEventsTab()
             }
         })
+
+        User.sharedInstance!!.fetchEvents(this::fetchExploreEventsCompletion)
     }
     override fun onResume() {
         super.onResume()
@@ -82,7 +84,7 @@ class EventsActivity : AppCompatActivity() {
         mRecyclerViewExplore?.setHasFixedSize(true)
         mLayoutManagerExplore = LinearLayoutManager(this)
         mRecyclerViewExplore?.layoutManager = mLayoutManagerExplore
-        mAdapterExplore = MyEventRecyclerViewAdapter(User.sharedInstance.getAllEvents())
+        mAdapterExplore = MyEventRecyclerViewAdapter(User.sharedInstance!!.getAllEvents())
         mRecyclerViewExplore?.adapter = mAdapterExplore
     }
     private fun loadAcceptedEventsTab() {
@@ -90,7 +92,7 @@ class EventsActivity : AppCompatActivity() {
         mRecyclerViewAccepted?.setHasFixedSize(true)
         mLayoutManagerAccepted = LinearLayoutManager(this)
         mRecyclerViewAccepted?.layoutManager = mLayoutManagerAccepted
-        mAdapterAccepted = MyEventRecyclerViewAdapter(User.sharedInstance.getAcceptedEvents())
+        mAdapterAccepted = MyEventRecyclerViewAdapter(User.sharedInstance!!.getAcceptedEvents())
         mRecyclerViewAccepted?.adapter = mAdapterAccepted
     }
     private fun loadPendingEventsTab() {
@@ -98,7 +100,7 @@ class EventsActivity : AppCompatActivity() {
         mRecyclerViewPending?.setHasFixedSize(true)
         mLayoutManagerPending = LinearLayoutManager(this)
         mRecyclerViewPending?.layoutManager = mLayoutManagerPending
-        mAdapterPending = MyEventRecyclerViewAdapter(User.sharedInstance.getPendingEvents())
+        mAdapterPending = MyEventRecyclerViewAdapter(User.sharedInstance!!.getPendingEvents())
         mRecyclerViewPending?.adapter = mAdapterPending
     }
 
@@ -127,8 +129,9 @@ class EventsActivity : AppCompatActivity() {
     }
 
     private fun createNewEvent() {
-        val groups: ArrayList<GroupDataObject> = User.sharedInstance.getAllGroups()
-        val groupNames: ArrayList<String> = User.sharedInstance.getAllGroupNames()
+        val groups: ArrayList<GroupDataObject> = User.sharedInstance!!.getAllGroups()
+
+        val groupNames: ArrayList<String> = User.sharedInstance!!.getAllGroupNames()
         val charSequenceItems = groupNames.toArray(arrayOfNulls<CharSequence>(groupNames.count()))
 
         val mSelectedItems: ArrayList<GroupDataObject> = ArrayList()
@@ -146,13 +149,14 @@ class EventsActivity : AppCompatActivity() {
         })
         alert.setNeutralButton("Cancel", DialogInterface.OnClickListener { dialogInterface, i ->  })
         alert.setPositiveButton("Okay", DialogInterface.OnClickListener { dialogInterface, i ->
-            navigateToEventCreationPage(mSelectedItems)
+            if (mSelectedItems.isNotEmpty()) {navigateToEventCreationPage(mSelectedItems)}
         })
         alert.show()
     }
 
     private fun navigateToEventCreationPage(groupArray: ArrayList<GroupDataObject>) {
         val eventCreationIntent = Intent(this, EventCreationActivity::class.java)
+        eventCreationIntent.putExtra("group_id", groupArray.first().id)
         startActivity(eventCreationIntent)
     }
     private fun navigateToProfilePage() {

@@ -1,7 +1,9 @@
 package com.nickbryanmiller.jackpotlottery
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.renderscript.ScriptGroup
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
@@ -11,6 +13,7 @@ import android.widget.*
 
 class ProfileActivity : AppCompatActivity() {
 
+    private var customAdapter: CustomAdapter? = null
     private var mListView: ListView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,14 +21,21 @@ class ProfileActivity : AppCompatActivity() {
         setContentView(R.layout.activity_profile)
         title = "Profile"
 
-        val adapter = CustomAdapter(this, User.sharedInstance.getAllGroups())
+        val profileNameTextView = findViewById(R.id.profile_name) as TextView
+        profileNameTextView.text = User.sharedInstance?.displayName
+        val emailTextView = findViewById(R.id.profile_email) as TextView
+        emailTextView.text = User.sharedInstance?.email
+
+        customAdapter = CustomAdapter(this, User.sharedInstance!!.getAllGroups())
         mListView = findViewById(R.id.group_list_view) as ListView
-        mListView?.adapter = adapter
+        mListView?.adapter = customAdapter
 
         mListView?.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
-            val selectedGroup = User.sharedInstance.getAllGroups()[position]
+            val selectedGroup = User.sharedInstance!!.getAllGroups()[position]
             showGroupIDAlert(selectedGroup.name!!, "Internz2017", "secretz")
         }
+
+        User.sharedInstance?.fetchGroups(this::fetchGroupsCompletion)
     }
 
     fun onCreateGroupButtonClick(v: View) {
@@ -48,11 +58,15 @@ class ProfileActivity : AppCompatActivity() {
         })
         alert.setButton(AlertDialog.BUTTON_NEGATIVE, "Create", {
             dialogInterface, i ->
-            Toast.makeText(this, "You clicked on Create", Toast.LENGTH_SHORT).show()
+            val group: GroupDataObject = GroupDataObject()
+            group.name = groupNameEditText.text.toString()
+            group.password = groupPasswordEditText.text.toString()
+            group.description = "descriptions for days. I really love descriptions"
+            User.sharedInstance!!.createGroup(group, this::createGroupCompletion)
         })
         alert.setButton(AlertDialog.BUTTON_POSITIVE, "Join", {
             dialogInterface, i ->
-            Toast.makeText(this, "You clicked on Join", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Joined!", Toast.LENGTH_SHORT).show()
         })
         alert.show()
     }
@@ -80,6 +94,7 @@ class ProfileActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_logout -> {
+                User.sharedInstance = null
                 navigateToLoginPage()
                 return true
             }
@@ -93,5 +108,15 @@ class ProfileActivity : AppCompatActivity() {
     private fun navigateToLoginPage() {
         val loginIntent = Intent(this, LoginActivity::class.java)
         startActivity(loginIntent)
+    }
+
+    private fun fetchGroupsCompletion(groups: ArrayList<GroupDataObject>) {
+        customAdapter = CustomAdapter(this, User.sharedInstance!!.getAllGroups())
+        mListView?.adapter = customAdapter
+    }
+    private fun createGroupCompletion(success: Boolean) {
+        if (success) {
+            Toast.makeText(this, "Created Group!", Toast.LENGTH_SHORT).show()
+        }
     }
 }

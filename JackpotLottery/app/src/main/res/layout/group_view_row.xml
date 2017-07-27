@@ -17,8 +17,8 @@
         android:innerRadius="0dp"
         android:shape="ring"
         android:thicknessRatio="1.9"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="4dp">
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp">
         <ImageView
             android:layout_height="80dp"
             android:layout_width="match_parent"
@@ -32,7 +32,10 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:layout_weight="2"
-        android:paddingLeft="8dp">
+        android:paddingLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginRight="8dp">
         <TextView
             android:id="@+id/group_name_textView"
             android:text="Name"

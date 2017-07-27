@@ -36,7 +36,7 @@ class MyEventRecyclerViewAdapter(private val mDataset: ArrayList<EventDataObject
     }
 
     override fun onBindViewHolder(holder: DataObjectHolder, position: Int) {
-        holder.eventNameTextView.text = mDataset[position].mEventNameText
+        holder.eventNameTextView.text = mDataset[position].name
 //        holder.dateTimeTextView.text = mDataset[position].getmEventDateTimeText()
     }
 

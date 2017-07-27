@@ -1,5 +1,6 @@
 package com.nickbryanmiller.jackpotlottery
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -14,6 +15,9 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
         supportActionBar?.hide()
+        if (User.sharedInstance != null) {
+            authenticationCompletion(User.sharedInstance!!)
+        }
     }
 
     fun onLoginButtonClick(v: View) {

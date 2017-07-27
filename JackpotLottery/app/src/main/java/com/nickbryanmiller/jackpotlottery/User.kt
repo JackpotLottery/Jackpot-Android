@@ -49,14 +49,15 @@ class User {
     }
 
     internal fun fetchEvents(completionMethod: (ArrayList<EventDataObject>) -> Unit) {
-        if (groups.isEmpty()) {
-            fetchGroups {
-                print("fetched events")
-                print("yo")
+        fetchGroups {
+            val stringBuilder: StringBuilder = StringBuilder()
+            if (groups.isNotEmpty()) {
+                stringBuilder.append(groups.elementAt(0).id)
             }
-        }
-        else {
-            JackpotClient.fetchEvents(token, id, "groupsID", this::fetchEventsCompletion, completionMethod)
+            for (index in 1..groups.count()-1) {
+                stringBuilder.append("," + groups.elementAt(index).id)
+            }
+            JackpotClient.fetchEvents(token, id, stringBuilder.toString(), this::fetchEventsCompletion, completionMethod)
         }
     }
     private fun fetchEventsCompletion(events: ArrayList<EventDataObject>, completionMethod: (ArrayList<EventDataObject>) -> Unit) {
@@ -64,12 +65,38 @@ class User {
         completionMethod(this.allEvents)
     }
 
+    internal fun createEvent(event: EventDataObject, completionMethod: (Boolean) -> Unit) {
+        JackpotClient.createEvent(token, event, this::createEventCompletion, completionMethod)
+    }
+    private fun createEventCompletion(success: Boolean, event: EventDataObject, completionMethod: (Boolean) -> Unit) {
+        if (success) {
+            allEvents.add(event)
+            completionMethod(success)
+        }
+    }
+
     internal fun fetchGroups(completionMethod: (ArrayList<GroupDataObject>) -> Unit) {
         JackpotClient.fetchGroups(token, id, this::fetchGroupsCompletion, completionMethod)
     }
     private fun fetchGroupsCompletion(groups: ArrayList<GroupDataObject>, completionMethod: (ArrayList<GroupDataObject>) -> Unit) {
         this.groups = groups
+        for (group in groups) {
+            groupNames.add(group.name!!)
+        }
+        completionMethod(this.groups)
     }
+
+    internal fun createGroup(group: GroupDataObject, completionMethod: (Boolean) -> Unit) {
+        JackpotClient.createGroup(token, id, group, this::createGroupCompletion, completionMethod)
+    }
+    private fun createGroupCompletion(success: Boolean, group: GroupDataObject, completionMethod: (Boolean) -> Unit) {
+        if (success) {
+            groups.add(group)
+            groupNames.add(group.name!!)
+            completionMethod(success)
+        }
+    }
+
 
     private fun setupUser() {
         displayName = "Display Name"
@@ -90,22 +117,22 @@ class User {
     private fun loadEvents() {
         for (index in 0..8) {
             val event: EventDataObject = EventDataObject()
-            event.mEventNameText = "All Event " + index
+            event.name = "All Event " + index
             allEvents.add(event)
         }
         for (index in 0..3) {
             val event: EventDataObject = EventDataObject()
-            event.mEventNameText = "Accepted Event " + (index + 17)
+            event.name = "Accepted Event " + (index + 17)
             acceptedEvents.add(event)
         }
         for (index in 0..4) {
             val event: EventDataObject = EventDataObject()
-            event.mEventNameText = "Pending Event " + (index + 42)
+            event.name = "Pending Event " + (index + 42)
             pendingEvents.add(event)
         }
     }
 
     companion object {
-        internal var sharedInstance: User = User()
+        internal var sharedInstance: User? = null
     }
 }
