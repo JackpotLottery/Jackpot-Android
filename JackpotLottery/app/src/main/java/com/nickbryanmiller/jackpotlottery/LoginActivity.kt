@@ -52,21 +52,18 @@ class LoginActivity : AppCompatActivity() {
         val password: TextView = findViewById(R.id.passwordText) as TextView
         JackpotClient.login(email.text.toString(), password.text.toString(), this::authenticationCompletion)
     }
-
     private fun createAccount() {
         val email: TextView = findViewById(R.id.usernameText) as TextView
         val password: TextView = findViewById(R.id.passwordText) as TextView
         val displayName: TextView = findViewById(R.id.nameText) as TextView
         JackpotClient.signup(email.text.toString(), password.text.toString(), displayName.text.toString(), this::authenticationCompletion)
     }
-
     private fun authenticationCompletion(user: User) {
         val mainHandler = Handler(Looper.getMainLooper());
         val myRunnable = Runnable() {
             runOnUiThread {
+                User.sharedInstance = user
                 val eventsIntent = Intent(this, EventsActivity::class.java)
-                eventsIntent.putExtra("email", user.email)
-                eventsIntent.putExtra("password", user.password)
                 startActivity(eventsIntent)
             }
         }

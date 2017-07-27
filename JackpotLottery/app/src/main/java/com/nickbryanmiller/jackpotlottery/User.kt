@@ -49,16 +49,25 @@ class User {
     }
 
     internal fun fetchEvents(completionMethod: (ArrayList<EventDataObject>) -> Unit) {
-        JackpotClient.fetchEvents(token, this::fetchEventsCompletion, completionMethod)
+        if (groups.isEmpty()) {
+            fetchGroups {
+                print("fetched events")
+                print("yo")
+            }
+        }
+        else {
+            JackpotClient.fetchEvents(token, id, "groupsID", this::fetchEventsCompletion, completionMethod)
+        }
     }
     private fun fetchEventsCompletion(events: ArrayList<EventDataObject>, completionMethod: (ArrayList<EventDataObject>) -> Unit) {
         this.allEvents = events
         completionMethod(this.allEvents)
     }
-    internal fun fetchGroups() {
-        JackpotClient.fetchGroups(token, this::fetchGroupsCompletion)
+
+    internal fun fetchGroups(completionMethod: (ArrayList<GroupDataObject>) -> Unit) {
+        JackpotClient.fetchGroups(token, id, this::fetchGroupsCompletion, completionMethod)
     }
-    private fun fetchGroupsCompletion(groups: ArrayList<GroupDataObject>) {
+    private fun fetchGroupsCompletion(groups: ArrayList<GroupDataObject>, completionMethod: (ArrayList<GroupDataObject>) -> Unit) {
         this.groups = groups
     }
 
@@ -94,5 +103,9 @@ class User {
             event.mEventNameText = "Pending Event " + (index + 42)
             pendingEvents.add(event)
         }
+    }
+
+    companion object {
+        internal var sharedInstance: User = User()
     }
 }

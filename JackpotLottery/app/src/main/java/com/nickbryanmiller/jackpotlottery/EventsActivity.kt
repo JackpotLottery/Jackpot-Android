@@ -9,6 +9,8 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
+import android.util.LogPrinter
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -28,8 +30,6 @@ class EventsActivity : AppCompatActivity() {
     private var mRecyclerViewPending: RecyclerView? = null
     private var mAdapterPending: RecyclerView.Adapter<*>? = null
     private var mLayoutManagerPending: RecyclerView.LayoutManager? = null
-    // User Object
-    internal var user: User = User()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,17 +37,6 @@ class EventsActivity : AppCompatActivity() {
 
         title = "Events"
 
-        // we should pass the user object created from LoginActivity
-        try {
-            val email: String = this.intent.extras.getString("email")
-            val password: String = this.intent.extras.getString("password")
-            if (!email.isNullOrEmpty() && !password.isNullOrEmpty()) {
-                JackpotClient.login(email, password, this::authenticationCompletion)
-            }
-        }
-        catch (e: Exception) {
-            print(e.message)
-        }
         val host = findViewById(R.id.tabHost) as TabHost
         host.setup()
 
@@ -93,7 +82,7 @@ class EventsActivity : AppCompatActivity() {
         mRecyclerViewExplore?.setHasFixedSize(true)
         mLayoutManagerExplore = LinearLayoutManager(this)
         mRecyclerViewExplore?.layoutManager = mLayoutManagerExplore
-        mAdapterExplore = MyEventRecyclerViewAdapter(user.getAllEvents())
+        mAdapterExplore = MyEventRecyclerViewAdapter(User.sharedInstance.getAllEvents())
         mRecyclerViewExplore?.adapter = mAdapterExplore
     }
     private fun loadAcceptedEventsTab() {
@@ -101,7 +90,7 @@ class EventsActivity : AppCompatActivity() {
         mRecyclerViewAccepted?.setHasFixedSize(true)
         mLayoutManagerAccepted = LinearLayoutManager(this)
         mRecyclerViewAccepted?.layoutManager = mLayoutManagerAccepted
-        mAdapterAccepted = MyEventRecyclerViewAdapter(user.getAcceptedEvents())
+        mAdapterAccepted = MyEventRecyclerViewAdapter(User.sharedInstance.getAcceptedEvents())
         mRecyclerViewAccepted?.adapter = mAdapterAccepted
     }
     private fun loadPendingEventsTab() {
@@ -109,7 +98,7 @@ class EventsActivity : AppCompatActivity() {
         mRecyclerViewPending?.setHasFixedSize(true)
         mLayoutManagerPending = LinearLayoutManager(this)
         mRecyclerViewPending?.layoutManager = mLayoutManagerPending
-        mAdapterPending = MyEventRecyclerViewAdapter(user.getPendingEvents())
+        mAdapterPending = MyEventRecyclerViewAdapter(User.sharedInstance.getPendingEvents())
         mRecyclerViewPending?.adapter = mAdapterPending
     }
 
@@ -138,8 +127,8 @@ class EventsActivity : AppCompatActivity() {
     }
 
     private fun createNewEvent() {
-        val groups: ArrayList<GroupDataObject> = user.getAllGroups()
-        val groupNames: ArrayList<String> = user.getAllGroupNames()
+        val groups: ArrayList<GroupDataObject> = User.sharedInstance.getAllGroups()
+        val groupNames: ArrayList<String> = User.sharedInstance.getAllGroupNames()
         val charSequenceItems = groupNames.toArray(arrayOfNulls<CharSequence>(groupNames.count()))
 
         val mSelectedItems: ArrayList<GroupDataObject> = ArrayList()
@@ -171,20 +160,6 @@ class EventsActivity : AppCompatActivity() {
         startActivity(profileIntent)
     }
 
-    private fun authenticationCompletion(user: User) {
-        val mainHandler = Handler(Looper.getMainLooper());
-        val myRunnable = Runnable() {
-            runOnUiThread {
-                this.user = user
-//                this.user = User("") // test asynch load
-                fetchExploreEvents()
-            }
-        }
-        mainHandler.post(myRunnable);
-    }
-    private fun fetchExploreEvents() {
-        user.fetchEvents(this::fetchExploreEventsCompletion)
-    }
     private fun fetchExploreEventsCompletion(events: ArrayList<EventDataObject>) {
         val mainHandler = Handler(Looper.getMainLooper());
         val myRunnable = Runnable() {

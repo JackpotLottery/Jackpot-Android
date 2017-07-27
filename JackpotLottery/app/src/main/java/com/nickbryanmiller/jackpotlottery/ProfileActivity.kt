@@ -12,19 +12,18 @@ import android.widget.*
 class ProfileActivity : AppCompatActivity() {
 
     private var mListView: ListView? = null
-    private var user: User = User()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
         title = "Profile"
 
-        val adapter = CustomAdapter(this, user.getAllGroups())
+        val adapter = CustomAdapter(this, User.sharedInstance.getAllGroups())
         mListView = findViewById(R.id.group_list_view) as ListView
         mListView?.adapter = adapter
 
         mListView?.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
-            val selectedGroup = user.getAllGroups()[position]
+            val selectedGroup = User.sharedInstance.getAllGroups()[position]
             showGroupIDAlert(selectedGroup.name!!, "Internz2017", "secretz")
         }
     }

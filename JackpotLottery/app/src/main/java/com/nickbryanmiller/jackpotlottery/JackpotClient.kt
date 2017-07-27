@@ -23,9 +23,10 @@ class JackpotClient {
         private val API_BASE_URL = "https://3c927f85.ngrok.io"
         private val client: AsyncHttpClient = AsyncHttpClient()
 
-        private fun getContentFromURLExtension(urlExtension: String, extension: String, handler: JsonHttpResponseHandler) {
-            val url = API_BASE_URL + urlExtension + "?" + extension
-            client.get(url, handler)
+        private fun getContentFromURLExtension(urlExtension: String, token: String, params: RequestParams, handler: JsonHttpResponseHandler) {
+            val url = API_BASE_URL + urlExtension
+            client.addHeader("x-access-token", token)
+            client.get(url, params, handler)
         }
         private fun postContentFromURLExtension(urlExtension: String, params: RequestParams, handler: JsonHttpResponseHandler) {
             val url = API_BASE_URL + urlExtension
@@ -70,15 +71,12 @@ class JackpotClient {
             })
         }
 
-        fun fetchToken(callbackMethod:(String, completionMethod: (String) -> Unit) -> Unit,
-                       completionMethod: (String) -> Unit) {
-            callbackMethod("a07e22bc18f5cb106bfe4cc1f83ad8ed", completionMethod)
-        }
+        fun fetchEvents(token: String, userID: String, groupsIDString: String, callbackMethod: (ArrayList<EventDataObject>, completionMethod: (ArrayList<EventDataObject>) -> Unit) -> Unit, completionMethod: (ArrayList<EventDataObject>) -> Unit) {
+            val params = RequestParams()
+            params.add("userID", userID)
+            params.add("groups", groupsIDString)
 
-        fun fetchEvents(token: String,
-                      callbackMethod: (ArrayList<EventDataObject>, completionMethod: (ArrayList<EventDataObject>) -> Unit) -> Unit,
-                      completionMethod: (ArrayList<EventDataObject>) -> Unit) {
-            getContentFromURLExtension("", token, object : JsonHttpResponseHandler() {
+            getContentFromURLExtension("/events/explore", token, params, object : JsonHttpResponseHandler() {
                 override fun onSuccess(statusCode: Int, headers: Array<org.apache.http.Header>?, responseBody: JSONObject?) {
                     var items: JSONArray? = null
                     try {
@@ -97,9 +95,26 @@ class JackpotClient {
             })
         }
 
-        fun fetchGroups(token: String, completionMethod: (ArrayList<GroupDataObject>) -> Unit) {
-            val groups: ArrayList<GroupDataObject> = ArrayList()
-            completionMethod(groups)
+        fun fetchGroups(token: String, userID: String, callbackMethod: (ArrayList<GroupDataObject>, completionMethod: (ArrayList<GroupDataObject>) -> Unit) -> Unit, completionMethod: (ArrayList<GroupDataObject>) -> Unit) {
+            val params = RequestParams()
+            params.add("userID", userID)
+
+            getContentFromURLExtension("/groups/", token, params, object : JsonHttpResponseHandler() {
+                override fun onSuccess(statusCode: Int, headers: Array<org.apache.http.Header>?, responseBody: JSONObject?) {
+                    try {
+                        // Get the posts json array
+                        val contentString = responseBody.toString()
+                        print(contentString)
+                        val groupsJson: JSONArray? = responseBody?.getJSONArray("groups")
+                        val groups: ArrayList<GroupDataObject> = GroupDataObject.fromJson(groupsJson!!)
+                        callbackMethod(groups, completionMethod)
+                        //return new ArrayList<EventDataObject>
+                    } catch (e: JSONException) {
+                        e.printStackTrace()
+                    }
+
+                }
+            })
         }
     }
 }
