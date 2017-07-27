@@ -67,12 +67,12 @@ class JackpotClient {
             })
         }
 
-        fun fetchEvents(token: String, userID: String, groupsIDString: String, callbackMethod: (ArrayList<EventDataObject>, completionMethod: (ArrayList<EventDataObject>) -> Unit) -> Unit, completionMethod: (ArrayList<EventDataObject>) -> Unit) {
+        fun fetchEvents(extension: String, token: String, userID: String, groupsIDString: String, callbackMethod: (ArrayList<EventDataObject>, completionMethod: (ArrayList<EventDataObject>) -> Unit) -> Unit, completionMethod: (ArrayList<EventDataObject>) -> Unit) {
             val params = RequestParams()
             params.add("userID", userID)
             params.add("groups", groupsIDString)
 
-            getContentFromURLExtension("/events/explore", token, params, object : JsonHttpResponseHandler() {
+            getContentFromURLExtension("/events/$extension", token, params, object : JsonHttpResponseHandler() {
                 override fun onSuccess(statusCode: Int, headers: Array<org.apache.http.Header>?, responseBody: JSONObject?) {
                     try {
                         val eventsJson: JSONArray? = responseBody?.getJSONArray("events")

@@ -57,12 +57,44 @@ class User {
             for (index in 1..groups.count()-1) {
                 stringBuilder.append("," + groups.elementAt(index).id)
             }
-            JackpotClient.fetchEvents(token, id, stringBuilder.toString(), this::fetchEventsCompletion, completionMethod)
+            JackpotClient.fetchEvents("explore", token, id, stringBuilder.toString(), this::fetchEventsCompletion, completionMethod)
         }
     }
     private fun fetchEventsCompletion(events: ArrayList<EventDataObject>, completionMethod: (ArrayList<EventDataObject>) -> Unit) {
         this.allEvents = events
         completionMethod(this.allEvents)
+    }
+    internal fun fetchAcceptedEvents(completionMethod: (ArrayList<EventDataObject>) -> Unit) {
+        fetchGroups {
+            val stringBuilder: StringBuilder = StringBuilder()
+            if (groups.isNotEmpty()) {
+                stringBuilder.append(groups.elementAt(0).id)
+            }
+            for (index in 1..groups.count()-1) {
+                stringBuilder.append("," + groups.elementAt(index).id)
+            }
+            JackpotClient.fetchEvents("accepted", token, id, stringBuilder.toString(), this::fetchAcceptedEventsCompletion, completionMethod)
+        }
+    }
+    private fun fetchAcceptedEventsCompletion(events: ArrayList<EventDataObject>, completionMethod: (ArrayList<EventDataObject>) -> Unit) {
+        this.acceptedEvents = events
+        completionMethod(this.acceptedEvents)
+    }
+    internal fun fetchPendingdEvents(completionMethod: (ArrayList<EventDataObject>) -> Unit) {
+        fetchGroups {
+            val stringBuilder: StringBuilder = StringBuilder()
+            if (groups.isNotEmpty()) {
+                stringBuilder.append(groups.elementAt(0).id)
+            }
+            for (index in 1..groups.count()-1) {
+                stringBuilder.append("," + groups.elementAt(index).id)
+            }
+            JackpotClient.fetchEvents("pending", token, id, stringBuilder.toString(), this::fetchPendingEventsCompletion, completionMethod)
+        }
+    }
+    private fun fetchPendingEventsCompletion(events: ArrayList<EventDataObject>, completionMethod: (ArrayList<EventDataObject>) -> Unit) {
+        this.pendingEvents = events
+        completionMethod(this.pendingEvents)
     }
 
     internal fun createEvent(event: EventDataObject, completionMethod: (Boolean) -> Unit) {

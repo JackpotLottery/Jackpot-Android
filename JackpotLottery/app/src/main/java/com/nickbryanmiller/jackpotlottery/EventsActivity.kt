@@ -17,7 +17,11 @@ import android.view.View
 import android.widget.TabHost
 import android.widget.TabHost.OnTabChangeListener
 
-class EventsActivity : AppCompatActivity() {
+public interface RecylcerEventHandler {
+    fun handleStatusButtonTapForEvent(position: Int, event: EventDataObject, view: View)
+}
+
+class EventsActivity : AppCompatActivity(), RecylcerEventHandler {
     // Explore Tab Variables
     private var mRecyclerViewExplore: RecyclerView? = null
     private var mAdapterExplore: RecyclerView.Adapter<*>? = null
@@ -63,9 +67,18 @@ class EventsActivity : AppCompatActivity() {
 
         host.setOnTabChangedListener(OnTabChangeListener {
             when (host.currentTab) {
-                0 -> loadExploreEventsTab()
-                1 -> loadAcceptedEventsTab()
-                2 -> loadPendingEventsTab()
+                0 -> {
+                    loadExploreEventsTab()
+                    User.sharedInstance!!.fetchEvents(this::fetchExploreEventsCompletion)
+                }
+                1 -> {
+                    loadAcceptedEventsTab()
+                    User.sharedInstance!!.fetchAcceptedEvents(this::fetchAcceptedEventsCompletion)
+                }
+                2 -> {
+                    loadPendingEventsTab()
+                    User.sharedInstance!!.fetchPendingdEvents(this::fetchPendingEventsCompletion)
+                }
             }
         })
 
@@ -73,11 +86,10 @@ class EventsActivity : AppCompatActivity() {
     }
     override fun onResume() {
         super.onResume()
-        (mAdapterExplore as MyEventRecyclerViewAdapter).setOnItemClickListener(object : MyEventRecyclerViewAdapter.MyClickListener {
-            override fun onItemClick(position: Int, v: View) {
-                print("test")
-            }
-        })
+    }
+
+    override fun handleStatusButtonTapForEvent(position: Int, event: EventDataObject, view: View) {
+        User.sharedInstance!!.joinEvent(event.id!!, this::joinEventCompletion)
     }
 
     private fun loadExploreEventsTab() {
@@ -85,7 +97,7 @@ class EventsActivity : AppCompatActivity() {
         mRecyclerViewExplore?.setHasFixedSize(true)
         mLayoutManagerExplore = LinearLayoutManager(this)
         mRecyclerViewExplore?.layoutManager = mLayoutManagerExplore
-        mAdapterExplore = MyEventRecyclerViewAdapter(User.sharedInstance!!.getAllEvents())
+        mAdapterExplore = MyEventRecyclerViewAdapter(User.sharedInstance!!.getAllEvents(), this)
         mRecyclerViewExplore?.adapter = mAdapterExplore
     }
     private fun loadAcceptedEventsTab() {
@@ -93,7 +105,7 @@ class EventsActivity : AppCompatActivity() {
         mRecyclerViewAccepted?.setHasFixedSize(true)
         mLayoutManagerAccepted = LinearLayoutManager(this)
         mRecyclerViewAccepted?.layoutManager = mLayoutManagerAccepted
-        mAdapterAccepted = MyEventRecyclerViewAdapter(User.sharedInstance!!.getAcceptedEvents())
+        mAdapterAccepted = MyEventRecyclerViewAdapter(User.sharedInstance!!.getAcceptedEvents(), this)
         mRecyclerViewAccepted?.adapter = mAdapterAccepted
     }
     private fun loadPendingEventsTab() {
@@ -101,7 +113,7 @@ class EventsActivity : AppCompatActivity() {
         mRecyclerViewPending?.setHasFixedSize(true)
         mLayoutManagerPending = LinearLayoutManager(this)
         mRecyclerViewPending?.layoutManager = mLayoutManagerPending
-        mAdapterPending = MyEventRecyclerViewAdapter(User.sharedInstance!!.getPendingEvents())
+        mAdapterPending = MyEventRecyclerViewAdapter(User.sharedInstance!!.getPendingEvents(), this)
         mRecyclerViewPending?.adapter = mAdapterPending
     }
 
@@ -154,6 +166,9 @@ class EventsActivity : AppCompatActivity() {
         })
         alert.show()
     }
+    private fun joinEventCompletion(success: Boolean, event: EventDataObject) {
+        loadExploreEventsTab()
+    }
 
     private fun navigateToEventCreationPage(groupArray: ArrayList<GroupDataObject>) {
         val eventCreationIntent = Intent(this, EventCreationActivity::class.java)
@@ -170,6 +185,24 @@ class EventsActivity : AppCompatActivity() {
         val myRunnable = Runnable() {
             runOnUiThread {
                 loadExploreEventsTab()
+            }
+        }
+        mainHandler.post(myRunnable);
+    }
+    private fun fetchAcceptedEventsCompletion(events: ArrayList<EventDataObject>) {
+        val mainHandler = Handler(Looper.getMainLooper());
+        val myRunnable = Runnable() {
+            runOnUiThread {
+                loadAcceptedEventsTab()
+            }
+        }
+        mainHandler.post(myRunnable);
+    }
+    private fun fetchPendingEventsCompletion(events: ArrayList<EventDataObject>) {
+        val mainHandler = Handler(Looper.getMainLooper());
+        val myRunnable = Runnable() {
+            runOnUiThread {
+                loadPendingEventsTab()
             }
         }
         mainHandler.post(myRunnable);
