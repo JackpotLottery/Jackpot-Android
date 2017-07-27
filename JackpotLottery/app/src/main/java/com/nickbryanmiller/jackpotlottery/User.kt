@@ -5,8 +5,8 @@ import org.json.JSONObject
 class User {
     internal var displayName: String = ""
     internal var email: String = ""
+    internal var password: String = "" // should not be internal
     private var token: String = ""
-    private var password: String = ""
     private var id: String = ""
     private var tokenExpiration: Long = 0
     private var groups: ArrayList<GroupDataObject> = ArrayList()
@@ -16,7 +16,7 @@ class User {
     private var pendingEvents: ArrayList<EventDataObject> = ArrayList()
 
     internal constructor() {
-        setupUser()
+        //setupUser()
     }
     internal constructor(token: String) {
         setupUser()
@@ -48,16 +48,6 @@ class User {
         return pendingEvents
     }
 
-    internal fun login() {
-
-    }
-    internal fun fetchToken(completionMethod: (String) -> Unit) {
-        JackpotClient.fetchToken(this::fetchTokenCompletion, completionMethod)
-    }
-    private fun fetchTokenCompletion(token: String, completionMethod: (String) -> Unit) {
-        this.token = token
-        completionMethod(this.token)
-    }
     internal fun fetchEvents(completionMethod: (ArrayList<EventDataObject>) -> Unit) {
         JackpotClient.fetchEvents(token, this::fetchEventsCompletion, completionMethod)
     }

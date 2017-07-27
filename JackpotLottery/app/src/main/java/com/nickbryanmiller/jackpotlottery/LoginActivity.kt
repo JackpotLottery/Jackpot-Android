@@ -17,9 +17,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     fun onLoginButtonClick(v: View) {
-        // login and then navigate
-        val user: User = User()
-        user.fetchToken(this::login)
+        login()
     }
     fun onSignupButtonClick(v: View) {
         val loginButton = findViewById(R.id.loginButton)
@@ -49,7 +47,7 @@ class LoginActivity : AppCompatActivity() {
         cancelButton.visibility = View.GONE
     }
 
-    private fun login(token: String) {
+    private fun login() {
         val email: TextView = findViewById(R.id.usernameText) as TextView
         val password: TextView = findViewById(R.id.passwordText) as TextView
         JackpotClient.login(email.text.toString(), password.text.toString(), this::authenticationCompletion)
@@ -67,6 +65,8 @@ class LoginActivity : AppCompatActivity() {
         val myRunnable = Runnable() {
             runOnUiThread {
                 val eventsIntent = Intent(this, EventsActivity::class.java)
+                eventsIntent.putExtra("email", user.email)
+                eventsIntent.putExtra("password", user.password)
                 startActivity(eventsIntent)
             }
         }

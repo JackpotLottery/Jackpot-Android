@@ -3,6 +3,8 @@ package com.nickbryanmiller.jackpotlottery
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -14,7 +16,6 @@ import android.widget.TabHost
 import android.widget.TabHost.OnTabChangeListener
 
 class EventsActivity : AppCompatActivity() {
-
     // Explore Tab Variables
     private var mRecyclerViewExplore: RecyclerView? = null
     private var mAdapterExplore: RecyclerView.Adapter<*>? = null
@@ -36,19 +37,17 @@ class EventsActivity : AppCompatActivity() {
 
         title = "Events"
 
+        // we should pass the user object created from LoginActivity
         try {
-            val token: String = this.intent.extras.get("user_token") as String
-            if (!token.isNullOrEmpty()) {
-                this.user = User(token)
-                user.fetchEvents {
-                    print("I am done")
-                }
+            val email: String = this.intent.extras.getString("email")
+            val password: String = this.intent.extras.getString("password")
+            if (!email.isNullOrEmpty() && !password.isNullOrEmpty()) {
+                JackpotClient.login(email, password, this::authenticationCompletion)
             }
         }
         catch (e: Exception) {
             print(e.message)
         }
-
         val host = findViewById(R.id.tabHost) as TabHost
         host.setup()
 
@@ -70,7 +69,7 @@ class EventsActivity : AppCompatActivity() {
         spec.setIndicator("Pending")
         host.addTab(spec)
 
-        // Cards for tab 1
+        // Cards for tab 1 - need to load or crash
         loadExploreEventsTab()
 
         host.setOnTabChangedListener(OnTabChangeListener {
@@ -81,7 +80,6 @@ class EventsActivity : AppCompatActivity() {
             }
         })
     }
-
     override fun onResume() {
         super.onResume()
         (mAdapterExplore as MyEventRecyclerViewAdapter).setOnItemClickListener(object : MyEventRecyclerViewAdapter.MyClickListener {
@@ -91,7 +89,6 @@ class EventsActivity : AppCompatActivity() {
     }
 
     private fun loadExploreEventsTab() {
-        if (mRecyclerViewExplore != null) { return }
         mRecyclerViewExplore = findViewById(R.id.recycler_view_explore) as RecyclerView
         mRecyclerViewExplore?.setHasFixedSize(true)
         mLayoutManagerExplore = LinearLayoutManager(this)
@@ -100,7 +97,6 @@ class EventsActivity : AppCompatActivity() {
         mRecyclerViewExplore?.adapter = mAdapterExplore
     }
     private fun loadAcceptedEventsTab() {
-        if (mRecyclerViewAccepted != null) { return }
         mRecyclerViewAccepted = findViewById(R.id.recycler_view_accepted) as RecyclerView
         mRecyclerViewAccepted?.setHasFixedSize(true)
         mLayoutManagerAccepted = LinearLayoutManager(this)
@@ -109,7 +105,6 @@ class EventsActivity : AppCompatActivity() {
         mRecyclerViewAccepted?.adapter = mAdapterAccepted
     }
     private fun loadPendingEventsTab() {
-        if (mRecyclerViewPending != null) { return }
         mRecyclerViewPending = findViewById(R.id.recycler_view_pending) as RecyclerView
         mRecyclerViewPending?.setHasFixedSize(true)
         mLayoutManagerPending = LinearLayoutManager(this)
@@ -174,5 +169,29 @@ class EventsActivity : AppCompatActivity() {
     private fun navigateToProfilePage() {
         val profileIntent = Intent(this, ProfileActivity::class.java)
         startActivity(profileIntent)
+    }
+
+    private fun authenticationCompletion(user: User) {
+        val mainHandler = Handler(Looper.getMainLooper());
+        val myRunnable = Runnable() {
+            runOnUiThread {
+                this.user = user
+//                this.user = User("") // test asynch load
+                fetchExploreEvents()
+            }
+        }
+        mainHandler.post(myRunnable);
+    }
+    private fun fetchExploreEvents() {
+        user.fetchEvents(this::fetchExploreEventsCompletion)
+    }
+    private fun fetchExploreEventsCompletion(events: ArrayList<EventDataObject>) {
+        val mainHandler = Handler(Looper.getMainLooper());
+        val myRunnable = Runnable() {
+            runOnUiThread {
+                loadExploreEventsTab()
+            }
+        }
+        mainHandler.post(myRunnable);
     }
 }

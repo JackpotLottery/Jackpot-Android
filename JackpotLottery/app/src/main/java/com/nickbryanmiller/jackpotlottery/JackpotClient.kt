@@ -20,7 +20,7 @@ class JackpotClient {
     }
 
     companion object {
-        private val API_BASE_URL = "https://b38ddddc.ngrok.io"
+        private val API_BASE_URL = "https://3c927f85.ngrok.io"
         private val client: AsyncHttpClient = AsyncHttpClient()
 
         private fun getContentFromURLExtension(urlExtension: String, extension: String, handler: JsonHttpResponseHandler) {
