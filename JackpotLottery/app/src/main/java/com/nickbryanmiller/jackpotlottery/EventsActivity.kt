@@ -75,6 +75,7 @@ class EventsActivity : AppCompatActivity() {
         super.onResume()
         (mAdapterExplore as MyEventRecyclerViewAdapter).setOnItemClickListener(object : MyEventRecyclerViewAdapter.MyClickListener {
             override fun onItemClick(position: Int, v: View) {
+                print("test")
             }
         })
     }

@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import java.util.*
+import kotlin.collections.ArrayList
 
 class MyEventRecyclerViewAdapter(private val mDataset: ArrayList<EventDataObject>) : RecyclerView.Adapter<MyEventRecyclerViewAdapter.DataObjectHolder>() {
 
@@ -37,7 +38,14 @@ class MyEventRecyclerViewAdapter(private val mDataset: ArrayList<EventDataObject
 
     override fun onBindViewHolder(holder: DataObjectHolder, position: Int) {
         holder.eventNameTextView.text = mDataset[position].name
-//        holder.dateTimeTextView.text = mDataset[position].getmEventDateTimeText()
+        holder.dateTimeTextView.text = mDataset[position].date
+
+        for (group in User.sharedInstance!!.getAllGroups()) {
+            if (group.id == mDataset[position].groupID) {
+                holder.creatorTextView.text = "Hosted by: " + group.name
+                break
+            }
+        }
     }
 
     fun addItem(eventDataObj: EventDataObject, index: Int) {
