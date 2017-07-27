@@ -148,5 +148,24 @@ class JackpotClient {
                 }
             })
         }
+        fun joinGroup(token: String, userID: String, group: GroupDataObject, callbackMethod: (group: GroupDataObject, completionMethod: (GroupDataObject) -> Unit) -> Unit, completionMethod: (GroupDataObject) -> Unit) {
+            val params = RequestParams()
+            params.add("userID", userID)
+            params.add("name", group.name)
+            params.add("password", group.password)
+
+            postContentFromURLExtension("/groups/join", token, params, object : JsonHttpResponseHandler() {
+                override fun onSuccess(statusCode: Int, headers: Array<org.apache.http.Header>?, responseBody: JSONObject?) {
+                    try {
+                        val groupJSON: JSONObject? = responseBody?.getJSONObject("group")
+                        val joinedGroup: GroupDataObject = GroupDataObject(groupJSON!!)
+                        callbackMethod(joinedGroup, completionMethod)
+                    } catch (e: JSONException) {
+                        e.printStackTrace()
+                    }
+
+                }
+            })
+        }
     }
 }

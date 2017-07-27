@@ -97,6 +97,14 @@ class User {
         }
     }
 
+    internal fun joinGroup(group: GroupDataObject, completionMethod: (GroupDataObject) -> Unit) {
+        JackpotClient.joinGroup(token, id, group, this::joinGroupCompletion, completionMethod)
+    }
+    private fun joinGroupCompletion(group: GroupDataObject, completionMethod: (GroupDataObject) -> Unit) {
+        groups.add(group)
+        groupNames.add(group.name!!)
+        completionMethod(group)
+    }
 
     private fun setupUser() {
         displayName = "Display Name"

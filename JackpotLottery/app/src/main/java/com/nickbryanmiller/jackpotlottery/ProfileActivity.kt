@@ -66,7 +66,10 @@ class ProfileActivity : AppCompatActivity() {
         })
         alert.setButton(AlertDialog.BUTTON_POSITIVE, "Join", {
             dialogInterface, i ->
-            Toast.makeText(this, "Joined!", Toast.LENGTH_SHORT).show()
+            val group: GroupDataObject = GroupDataObject()
+            group.name = groupNameEditText.text.toString()
+            group.password = groupPasswordEditText.text.toString()
+            User.sharedInstance!!.joinGroup(group, this::joinGroupCompletion)
         })
         alert.show()
     }
@@ -111,12 +114,21 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun fetchGroupsCompletion(groups: ArrayList<GroupDataObject>) {
-        customAdapter = CustomAdapter(this, User.sharedInstance!!.getAllGroups())
-        mListView?.adapter = customAdapter
+        refreshGroups()
     }
     private fun createGroupCompletion(success: Boolean) {
         if (success) {
+            refreshGroups()
             Toast.makeText(this, "Created Group!", Toast.LENGTH_SHORT).show()
         }
+    }
+    private fun joinGroupCompletion(group: GroupDataObject) {
+        refreshGroups()
+        Toast.makeText(this, "Created Group!", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun refreshGroups() {
+        customAdapter = CustomAdapter(this, User.sharedInstance!!.getAllGroups())
+        mListView?.adapter = customAdapter
     }
 }
