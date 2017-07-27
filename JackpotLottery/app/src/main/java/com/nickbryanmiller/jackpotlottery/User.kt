@@ -75,11 +75,28 @@ class User {
         }
     }
 
+    internal fun joinEvent(eventID: String, completionMethod: (Boolean, EventDataObject) -> Unit) {
+        JackpotClient.joinEvent(token, id, eventID, this::joinEventCompletion, completionMethod)
+    }
+    private fun joinEventCompletion(success: Boolean, event: EventDataObject, completionMethod: (Boolean, EventDataObject) -> Unit) {
+        if (success) {
+            for (index in 0..allEvents.count()-1) {
+                if (event.id == allEvents[index].id) {
+                    allEvents.removeAt(index)
+                    break
+                }
+            }
+            pendingEvents.add(event)
+            completionMethod(success, event)
+        }
+    }
+
     internal fun fetchGroups(completionMethod: (ArrayList<GroupDataObject>) -> Unit) {
         JackpotClient.fetchGroups(token, id, this::fetchGroupsCompletion, completionMethod)
     }
     private fun fetchGroupsCompletion(groups: ArrayList<GroupDataObject>, completionMethod: (ArrayList<GroupDataObject>) -> Unit) {
         this.groups = groups
+        groupNames.clear()
         for (group in groups) {
             groupNames.add(group.name!!)
         }

@@ -124,7 +124,7 @@ class ProfileActivity : AppCompatActivity() {
     }
     private fun joinGroupCompletion(group: GroupDataObject) {
         refreshGroups()
-        Toast.makeText(this, "Created Group!", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Joined Group!", Toast.LENGTH_SHORT).show()
     }
 
     private fun refreshGroups() {

@@ -110,6 +110,25 @@ class JackpotClient {
                 }
             })
         }
+        fun joinEvent(token: String, userID: String, eventID: String, callbackMethod: (success :Boolean, event: EventDataObject, completionMethod: (Boolean, EventDataObject) -> Unit) -> Unit, completionMethod: (Boolean, EventDataObject) -> Unit) {
+            val params = RequestParams()
+            params.add("userID", userID)
+            params.add("eventID", eventID)
+
+            postContentFromURLExtension("/events/join", token, params, object : JsonHttpResponseHandler() {
+                override fun onSuccess(statusCode: Int, headers: Array<org.apache.http.Header>?, responseBody: JSONObject?) {
+                    try {
+                        val eventJSON: JSONObject? = responseBody?.getJSONObject("event")
+                        val joinedEvent: EventDataObject = EventDataObject(eventJSON!!)
+                        callbackMethod(true, joinedEvent, completionMethod)
+                    } catch (e: JSONException) {
+                        e.printStackTrace()
+                    }
+
+                }
+            })
+        }
+
 
         fun fetchGroups(token: String, userID: String, callbackMethod: (ArrayList<GroupDataObject>, completionMethod: (ArrayList<GroupDataObject>) -> Unit) -> Unit, completionMethod: (ArrayList<GroupDataObject>) -> Unit) {
             val params = RequestParams()
