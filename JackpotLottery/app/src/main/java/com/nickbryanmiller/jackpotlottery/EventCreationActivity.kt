@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
 
 class EventCreationActivity : AppCompatActivity() {
 
@@ -18,7 +19,6 @@ class EventCreationActivity : AppCompatActivity() {
     fun onEventCreationCancelButtonClick(v: View) {
         this.onBackPressed()
     }
-
     fun onEventCreateButtonClick(v: View) {
         createEvent()
     }
@@ -41,6 +41,29 @@ class EventCreationActivity : AppCompatActivity() {
     }
 
     private fun createEvent() {
-        // do event creation
+        try {
+            val groupID = this.intent.extras.getString("group_id")
+            val nameTextView = findViewById(R.id.created_event_name) as TextView
+            val dateTextView = findViewById(R.id.created_event_date) as TextView
+            val descriptionTextView = findViewById(R.id.created_event_description) as TextView
+            val locationTextView = findViewById(R.id.created_event_location) as TextView
+
+            val event: EventDataObject = EventDataObject()
+            event.name = nameTextView.text.toString()
+            event.date = dateTextView.text.toString()
+            event.description = descriptionTextView.text.toString()
+            event.location = locationTextView.text.toString()
+            event.capacity = 50
+            event.tag = "demo"
+            event.groupID = groupID
+
+            User.sharedInstance!!.createEvent(event, this::createEventCompletion)
+        }
+        catch (e: Exception) {
+            print(e.message)
+        }
+    }
+    private fun createEventCompletion(success: Boolean) {
+        this.onBackPressed()
     }
 }
